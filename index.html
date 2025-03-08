@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抖音风格视频滑动</title>
+    <style>
+        /* 重置样式 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: black; /* 背景色设置为黑色，避免视频未加载时出现白边 */
+        }
+
+        /* 视频容器 */
+        .video-container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory; /* 确保每次滑动对齐到一个视频 */
+        }
+
+        /* 每个视频项 */
+        .video-item {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* 视频样式 */
+        video {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain; /* 保持视频比例，完整显示视频 */
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <!-- 视频项 -->
+        <div class="video-item">
+            <video controls autoplay muted loop data-src="video1.mp4"></video>
+        </div>
+        <div class="video-item">
+            <video controls autoplay muted loop data-src="video2.mp4"></video>
+        </div>
+        <div class="video-item">
+            <video controls autoplay muted loop data-src="video3.mp4"></video>
+        </div>
+    </div>
+
+    <script>
+        // 获取视频容器和所有视频元素
+        const videoContainer = document.querySelector('.video-container');
+        const videos = document.querySelectorAll('.video-item video');
+
+        // 监听滚动事件
+        videoContainer.addEventListener('scroll', () => {
+            videos.forEach((video) => {
+                const rect = video.getBoundingClientRect();
+
+                // 如果视频进入视口
+                if (rect.top >= 0 && rect.top <= window.innerHeight) {
+                    // 如果视频尚未加载，则加载视频
+                    if (!video.src) {
+                        video.src = video.getAttribute('data-src');
+                        video.load(); // 加载视频
+                        video.play(); // 自动播放
+                    }
+                } else {
+                    // 如果视频离开视口，则暂停播放
+                    if (video.src) {
+                        video.pause();
+                    }
+                }
+            });
+        });
+
+        // 初始化时加载并播放第一个视频
+        const firstVideo = videos[0];
+        if (firstVideo) {
+            firstVideo.src = firstVideo.getAttribute('data-src');
+            firstVideo.load();
+            firstVideo.play();
+        }
+    </script>
+</body>
+</html>
